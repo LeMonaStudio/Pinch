@@ -15,10 +15,8 @@ struct ContentView: View {
     
     //MARK: - FUNCTION
     func resetImageState() {
-        withAnimation(.spring()){
-            imageScale = 1
-            imageOffset = .zero
-        }
+        imageScale = 1
+        imageOffset = .zero
     }
     
     //MARK: - BODY
@@ -71,10 +69,58 @@ struct ContentView: View {
             .onAppear{
                 isAnimating.toggle()
             }
+            //MARK: - INFOPANEL
             .overlay(alignment: .topLeading) {
                 InfoPanelView(scale: imageScale, offset: imageOffset)
                     .padding(.horizontal)
-                    .padding(.top, 30)
+            }
+            //MARK: - CONTROLS
+            .overlay(alignment: .bottom) {
+                Group {
+                    HStack {
+                        //SCALE DOWN
+                        Button {
+                            withAnimation(.spring()){
+                                imageScale -= 1
+                                if imageScale <= 1 {
+                                    resetImageState()
+                                }
+                            }
+                        } label: {
+                            ControlImageView(systemImageName: "minus.magnifyingglass")
+                        }
+
+                        
+                        // RESET
+                        
+                        Button {
+                            withAnimation(.spring()){
+                                resetImageState()
+                            }
+                        } label: {
+                            ControlImageView(systemImageName: "arrow.up.left.and.down.right.magnifyingglass")
+                        }
+                        
+                        //SCALE UP
+                        
+                        Button {
+                            withAnimation(.spring()){
+                                if imageScale >= 1 && imageScale < 10  {
+                                    imageScale += 1
+                                }
+                            }
+                        } label: {
+                            ControlImageView(systemImageName: "plus.magnifyingglass")
+                        }
+                        
+                    }//: CONTROLS
+                }
+                .padding(8)
+                .background(.ultraThinMaterial)
+                .cornerRadius(12)
+                .opacity(isAnimating ? 1 : 0)
+                .animation(.linear(duration: 1), value: isAnimating)
+                
             }
         } //: NAVIGATION
         .navigationViewStyle(.stack)
