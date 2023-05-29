@@ -13,10 +13,18 @@ struct ContentView: View {
     @State private var imageScale: CGFloat = 1
     @State private var imageOffset: CGSize = .zero
     
+    
+    let pages: [Page] = pageData
+    @State private var pageIndex: Int = 1
+    
     //MARK: - FUNCTION
     func resetImageState() {
         imageScale = 1
         imageOffset = .zero
+    }
+    
+    func currentPage() -> String {
+        return pages[pageIndex - 1].imageName
     }
     
     //MARK: - BODY
@@ -26,7 +34,7 @@ struct ContentView: View {
                 Color(.clear)
                 
                 //MARK: - PAGE IMAGE
-                Image("magazine-front-cover")
+                Image(currentPage())
                     .resizable()
                     .scaledToFit()
                     .cornerRadius(10)
@@ -86,6 +94,16 @@ struct ContentView: View {
                     )
                     
             } //: ZSTACK
+            .overlay(alignment: .topTrailing){
+                //MARK: - DRAWER
+                DrawerView(isAnimating: isAnimating, pages: pages, onThumbnailTapped: { pageID in
+                    withAnimation(.linear){
+                        isAnimating = true
+                        pageIndex = pageID
+                    }
+                })
+                .padding(.top, UIScreen.main.bounds.height / 12)
+            }
             .navigationBarTitle("Pinch & Zoom", displayMode: .inline)
             .onAppear{
                 isAnimating.toggle()
